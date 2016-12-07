@@ -1,90 +1,34 @@
 ﻿using System.Collections;
+using System.IO;
 
 namespace ImpactCraters
     {
-    public class Ages
-        {
-        public string Age;
-        public string Youngest;
-        public string Oldest;
-        public string Best;
-        public string Uncertain;
-        public string UncertainType;
-
-        public Ages ()
-            {
-            Age = string.Empty;
-            Youngest = string.Empty;
-            Oldest = string.Empty;
-            Best = string.Empty;
-            Uncertain = string.Empty;
-            UncertainType = string.Empty;
-            }
-        }
-
-    public class Diameters
-        {
-        public string FinalRim;
-        public string PresentDay;
-        public string OuterLimitOfDeformation;
-        public string Diameter;
-        public string SQL;
-
-        public Diameters ()
-            {
-            FinalRim = string.Empty;
-            PresentDay = string.Empty;
-            OuterLimitOfDeformation = string.Empty;
-            Diameter = string.Empty;
-            SQL = string.Empty;
-            }
-        }
-
     public class ImpactCrater
         {
-        public string Class;
-        public string InheritedClass;
-        public string StructureName;
-        public string CraterField;
-        public string Region;
-        public string Country;
-        public string Continent;
+        public string Name;
+        public string Location;
         public string Latitude;
         public string Longitude;
-        public Diameters Diameter;
-        public Ages Ages;
-        public string Overburden;                 // m
-        public string PresentWaterDepth;        // m
+        public string Diameter;
+        public string Age;
+        public string Exposed;
         public string Drilled;
-        public string Target;
-        public string TargetWaterDepth;         // m
-        public string Impactor;
-        public string UpdatedOn;
-        public string CompiledBy;
+        public string TargetRock;
+        public string BolideType;
         public ArrayList References;
 
         public ImpactCrater ()
             {
-            Class = string.Empty;
-            InheritedClass = string.Empty;
-            StructureName = string.Empty;
-            CraterField = string.Empty;
-            Region = string.Empty;
-            Country = string.Empty;
-            Continent = string.Empty;
+            Name = string.Empty;
+            Location = string.Empty;
             Latitude = string.Empty;
             Longitude = string.Empty;
-            Diameter = new Diameters ();
-            Ages = new Ages ();
-            Overburden = string.Empty;
-            PresentWaterDepth = string.Empty;
+            Diameter = string.Empty;
+            Age = string.Empty;
+            Exposed = string.Empty;
             Drilled = string.Empty;
-            Target = string.Empty;
-            TargetWaterDepth = string.Empty;
-            Impactor = string.Empty;
-            UpdatedOn = string.Empty;
-            CompiledBy = string.Empty;
-
+            TargetRock = string.Empty;
+            BolideType = string.Empty;
             References = null;
             }
 
@@ -92,6 +36,12 @@ namespace ImpactCraters
             {
             if (References == null)
                 References = new ArrayList ();
+
+            if (text.StartsWith ("\""))
+                text = text.Substring (1);
+
+            if (text.EndsWith ("\""))
+                text = text.Substring (0, text.Length - 1);
 
             References.Add (text);
             }
@@ -111,7 +61,65 @@ namespace ImpactCraters
             if (CraterArray == null)
                 CraterArray = new ArrayList ();
 
+            crater.Latitude = crater.Latitude.Replace ("°", "^");
+            crater.Latitude = crater.Latitude.Replace ("�", "^");
+
+            crater.Longitude = crater.Longitude.Replace ("°", "^");
+            crater.Longitude = crater.Longitude.Replace ("�", "^");
+
+            if(crater.Age != "-")
+                {
+                crater.Age = crater.Age.Replace (" ", "");
+                crater.Age = crater.Age.Replace ("-", " to ");
+                crater.Age = crater.Age.Replace (" ± ", " +/- ");
+                crater.Age = crater.Age.Replace ("�", " +/- ");
+                crater.Age = crater.Age.Replace ("Ma", "");
+                crater.Age = crater.Age.Replace ("*", "");
+                }
+
+            crater.Drilled = Helper.AssignYesNo (crater.Drilled);
+            crater.Exposed = Helper.AssignYesNo (crater.Exposed);
+
             CraterArray.Add (crater);
+            }
+
+        static public int Read (string txtFileName)
+            {
+            if (File.Exists (txtFileName))
+                {
+                TextReader reader = null;
+
+                using (reader = File.OpenText (txtFileName))
+                    {
+                    ImpactCrater crater = new ImpactCrater ();
+
+                    crater.Name = reader.ReadLine ();
+                    crater.Location = reader.ReadLine ();
+                    crater.Latitude = reader.ReadLine ();
+                    crater.Longitude = reader.ReadLine ();
+                    crater.Diameter = reader.ReadLine ();
+                    crater.Age = reader.ReadLine ();
+                    crater.Exposed = reader.ReadLine ();
+                    crater.Drilled = reader.ReadLine ();
+                    crater.TargetRock = reader.ReadLine ();
+                    crater.BolideType = reader.ReadLine ();
+
+                    string line = null;
+
+                    for (;;)
+                        {
+                        if (( line = reader.ReadLine () ) != null)
+                            crater.AddReferences (line);
+                        else
+                            break;
+                        }
+
+                    ImpactCraters.Add (crater);
+                    }
+                }
+
+            return 0;
             }
         }
     }
+

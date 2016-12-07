@@ -5,13 +5,15 @@ namespace ImpactCraters
     {
     public enum QueryTypes
         {
-        Class = 0,
-        Region = 1,
-        Country = 2,
-        Continent = 3,
-        Diameter = 4,
-        Age = 5,
-        Impactor = 6,
+        Name = 1,
+        Location = 2,
+        Diameter = 3,
+        Age = 4,
+        Period = 5,
+        Exposed = 6,
+        Drilled = 7,
+        TargetRock = 8,
+        BolideType = 9,
         }
 
     public enum QuerySubtypes
@@ -19,13 +21,15 @@ namespace ImpactCraters
         StartsWith = 0,
         Contains = 1,
         EndsWith = 2,
+        GreaterThan = 3,
+        LessThan = 4
         }
 
     public class ClassQuery
         {
         public string Value;
 
-        private QueryTypes QueryType_ = QueryTypes.Class;
+        private QueryTypes QueryType_ = QueryTypes.Name;
         public QueryTypes QueryType
             {
             get { return QueryType_; }
@@ -77,7 +81,7 @@ namespace ImpactCraters
                 string [] strings = queries [index].Trim ().Split (delimiter2Chars);
 
                 string name = string.Empty;
-                QueryTypes queryType = QueryTypes.Class;
+                QueryTypes queryType = QueryTypes.Name;
                 QuerySubtypes querySubtype = QuerySubtypes.StartsWith;
 
                 if (Parse (strings, ref name, ref queryType, ref querySubtype) == true)
@@ -95,13 +99,44 @@ namespace ImpactCraters
                 {
                 switch (strings [1])
                     {
-                    case "class": queryType = QueryTypes.Class; break;
-                    case "region": queryType = QueryTypes.Region; break;
-                    case "country": queryType = QueryTypes.Country; break;
-                    case "continent": queryType = QueryTypes.Continent; break;
-                    case "diameter": queryType = QueryTypes.Diameter; break;
-                    case "age": queryType = QueryTypes.Age; break;
-                    case "impactor": queryType = QueryTypes.Impactor; break;
+                    case "name":
+                        queryType = QueryTypes.Name;
+                        break;
+
+                    case "location":
+                        queryType = QueryTypes.Location;
+                        break;
+
+                    case "diameter":
+                        queryType = QueryTypes.Diameter;
+                        break;
+
+                    case "age":
+                        queryType = QueryTypes.Age;
+                        break;
+
+                    case "period":
+                        queryType = QueryTypes.Period;
+                        break;
+
+                    case "exposed":
+                        queryType = QueryTypes.Exposed;
+                        break;
+
+                    case "drilled":
+                        queryType = QueryTypes.Drilled;
+                        break;
+
+                    case "targetrock":
+                    case "target":
+                        queryType = QueryTypes.TargetRock;
+                        break;
+
+                    case "bolidetype":
+                    case "bolide":
+                        queryType = QueryTypes.BolideType;
+                        break;
+
                     default:
                         return false;
                     }
@@ -112,7 +147,7 @@ namespace ImpactCraters
 
                     return true;
                     }
-                else if (strings.Length == 4)
+                else if (strings.Length >= 4)
                     {
                     string query = strings [2].ToLower ();
 
@@ -122,8 +157,15 @@ namespace ImpactCraters
                         querySubtype = QuerySubtypes.Contains;
                     else if (query.StartsWith ("ends") || query.StartsWith ("endswith"))
                         querySubtype = QuerySubtypes.EndsWith;
+                    else if (query.StartsWith ("greaterthan") || query.StartsWith (">"))
+                        querySubtype = QuerySubtypes.GreaterThan;
+                    else if (query.StartsWith ("lessthan") || query.StartsWith ("<"))
+                        querySubtype = QuerySubtypes.LessThan;
 
                     value = strings [3].ToLower ();
+
+                    if (strings.Length == 5)
+                        value += " " + strings [4].ToLower ();
 
                     return true;
                     }
@@ -142,23 +184,53 @@ namespace ImpactCraters
             AllQueries.Add (new ClassQuery (value.ToLower (), queryType, querySubtype));
             }
 
-        public bool MatchesQuery (ImpactCrater crater)
+        public bool MatchesQuery (object obj)
             {
             if (AllQueries.Count > 0)
                 {
+                ImpactCrater crater = obj as ImpactCrater;
+
                 foreach (ClassQuery query in AllQueries)
                     {
                     string value = string.Empty;
 
                     switch (query.QueryType)
                         {
-                        case QueryTypes.Class: value = crater.Class; break;
-                        case QueryTypes.Region: value = crater.Region; break;
-                        case QueryTypes.Country: value = crater.Country; break;
-                        case QueryTypes.Continent: value = crater.Continent; break;
-                        case QueryTypes.Diameter: value = crater.Diameter.Diameter; break;
-                        case QueryTypes.Age: value = crater.Ages.Age; break;
-                        case QueryTypes.Impactor: value = crater.Impactor; break;
+                        case QueryTypes.Name:
+                            value = crater.Name;
+                            break;
+
+                        case QueryTypes.Location:
+                            value = crater.Location;
+                            break;
+
+                        case QueryTypes.Diameter:
+                            value = crater.Diameter;
+                            break;
+
+                        case QueryTypes.Age:
+                            value = Helper.RemoveUnwantedChars (crater.Age);
+                            break;
+
+                        case QueryTypes.Period:
+                            value = Period.Get (crater);
+                            break;
+
+                        case QueryTypes.Exposed:
+                            value = crater.Exposed;
+                            break;
+
+                        case QueryTypes.Drilled:
+                            value = crater.Drilled;
+                            break;
+
+                        case QueryTypes.TargetRock:
+                            value = crater.TargetRock;
+                            break;
+
+                        case QueryTypes.BolideType:
+                            value = crater.BolideType;
+                            break;
                         }
 
                     value = value.ToLower ();
@@ -177,6 +249,28 @@ namespace ImpactCraters
                         {
                         if (!value.Contains (query.Value))
                             return false;
+                        }
+                    else if (query.QuerySubtype == QuerySubtypes.GreaterThan)
+                        {
+                        double numericValue = 0.0, numericQueryValue = 0.0;
+
+                        if (double.TryParse (value, out numericValue))
+                            if (double.TryParse (query.Value, out numericQueryValue))
+                                if (numericValue >= numericQueryValue)
+                                    return true;
+
+                        return false;
+                        }
+                    else if (query.QuerySubtype == QuerySubtypes.LessThan)
+                        {
+                        double numericValue = 0.0, numericQueryValue = 0.0;
+
+                        if (double.TryParse (value, out numericValue))
+                            if (double.TryParse (query.Value, out numericQueryValue))
+                                if (numericValue <= numericQueryValue)
+                                    return true;
+
+                        return false;
                         }
                     }
                 }

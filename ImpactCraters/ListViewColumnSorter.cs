@@ -53,8 +53,8 @@ namespace ImpactCraters
 
             if (IsExtendedNumeric)
                 {
-                stringX = RemoveUnwantedChars (stringX);
-                stringY = RemoveUnwantedChars (stringY);
+                stringX = Helper.RemoveUnwantedChars (stringX);
+                stringY = Helper.RemoveUnwantedChars (stringY);
 
                 if (double.TryParse (stringX, out dx) && double.TryParse (stringY, out dy))
                     compareResults = ObjectCompare.Compare (dx, dy);
@@ -72,28 +72,6 @@ namespace ImpactCraters
                 return ( -compareResults );
             else
                 return 0;
-            }
-
-        private static string RemoveUnwantedChars (string stringer)
-            {
-            stringer = stringer.Replace ("~", "");
-            stringer = stringer.Replace ("<", "");
-            stringer = stringer.Replace (">", "");
-
-            string [] delimitors = { "+/-", "x", "to", "-" };
-
-            for (int index = 0; index < delimitors.Length; ++index)
-                if (stringer.Contains (delimitors [index]))
-                    {
-                    string [] delimitor = { delimitors [index] };
-                    string [] stringers = stringer.Split (delimitor, System.StringSplitOptions.None);
-
-                    stringer = stringers [0];
-                    }
-
-            stringer = stringer.Trim ();
-
-            return stringer;
             }
         }
     }
