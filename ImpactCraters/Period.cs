@@ -11,60 +11,66 @@
                 double age = 0.0;
 
                 //
-                // http://www.ucmp.berkeley.edu/help/timeform.php
+                // http://www.geosociety.org/science/timescale
                 //
 
                 if (double.TryParse (Helper.RemoveUnwantedChars (crater.Age), out age))
                     {
-                    if (age <= 65.5)
+                    if (age <= 66.0)
                         {
-                        if (age <= 2.588)
+                        if (age <= 2.6)
                             period = "Quaternary";
-                        else if (age > 2.588 && age <= 23.03)
+                        else if (age > 2.6 && age <= 23.0)
                             period = "Neogene";
-                        else if (age > 23.03 && age <= 65.5)
+                        else if (age > 23.03 && age <= 66.0)
                             period = "Paleogene";
                         }
-                    else if (age > 65.5 && age <= 251.0)
+                    else if (age > 66.0 && age <= 251.0)
                         {
-                        if (age > 65.5 && age <= 145.5)
+                        if (age > 66.0 && age <= 145.0)
                             period = "Cretaceous";
-                        else if (age > 145.5 && age <= 199.6)
+                        else if (age > 145.0 && age <= 201.0)
                             period = "Jurassic";
-                        else if (age > 199.6 && age <= 251.0)
+                        else if (age > 201.0 && age <= 252.0)
                             period = "Triassic";
                         }
-                    else if (age > 251.0 && age <= 542.0)
+                    else if (age > 252.0 && age <= 541.0)
                         {
                         if (age > 251.0 && age <= 299.0)
                             period = "Permian";
-                        else if (age > 299.0 && age <= 359.2)
+                        else if (age > 299.0 && age <= 359.0)
                             period = "Carboniferous";
-                        else if (age > 359.2 && age <= 416.0)
+                        else if (age > 359.0 && age <= 419.0)
                             period = "Devonian";
-                        else if (age > 416.0 && age <= 443.7)
+                        else if (age > 419.0 && age <= 444.0)
                             period = "Silurian";
-                        else if (age > 443.7 && age <= 488.3)
+                        else if (age > 444.0 && age <= 485.0)
                             period = "Ordovician";
-                        else if (age > 488.3 && age <= 542.0)
+                        else if (age > 485.0 && age <= 541.0)
                             period = "Cambrian";
                         }
                     else
                         {
-                        if (age > 542.0 && age <= 1000)
-                            period = "Neoproterozoic";
-                        else if (age > 1000 && age <= 1600)
-                            period = "Mesoproterozoic";
-                        else if (age > 1600 && age <= 2500)
-                            period = "Paleoproterozoic";
-                        else if (age > 2500 && age <= 2800)
-                            period = "Neoarchean";
-                        else if (age > 2800 && age <= 3200)
-                            period = "Mesoarchean";
-                        else if (age > 3200 && age <= 3600)
-                            period = "Paleoarchean";
-                        else if (age > 3600 && age <= 4000)
-                            period = "Eoarchean";
+                        if (age > 541.0 && age <= 635.0)
+                            period = "Ediacaran";
+                        else if (age > 635.0 && age <= 850.0)
+                            period = "Cryogenian";
+                        else if (age > 850.0 && age <= 1000.0)
+                            period = "Tonian";
+                        else if (age > 1000.0 && age <= 1200.0)
+                            period = "Stenian";
+                        else if (age > 1200.0 && age <= 1400.0)
+                            period = "Ectasian";
+                        else if (age > 1400.0 && age <= 1600.0)
+                            period = "Calymmian";
+                        else if (age > 1600.0 && age <= 1800.0)
+                            period = "Statherian";
+                        else if (age > 1600.0 && age <= 2050.0)
+                            period = "Orosirian";
+                        else if (age > 2050.0 && age <= 2300.0)
+                            period = "Rhyacian";
+                        else if (age > 2300.0 && age <= 2500.0)
+                            period = "Siderian";
                         }
                     }
                 }

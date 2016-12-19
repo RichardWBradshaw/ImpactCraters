@@ -25,10 +25,26 @@
             if (stringer == "-")
                 stringer = stringer.Replace ("-", "");
 
-            if (stringer.ToLower() == "y")
+            if (stringer.ToLower () == "y")
                 stringer = "Yes";
             else if (stringer.ToLower () == "n")
                 stringer = "No";
+
+            return stringer;
+            }
+
+        static public string AssignTarget (string stringer)
+            {
+            stringer = stringer.Trim ();
+
+            if (stringer == "C")
+                stringer = "Crystalline";
+            else if (stringer == "C-Ms")
+                stringer = "Metasedimentary";
+            else if (stringer == "M")
+                stringer = "Mixed";
+            else if (stringer == "S")
+                stringer = "Sedimentary";
 
             return stringer;
             }
@@ -43,11 +59,28 @@
             string prefix = stringer.Substring (0, 1);
             stringer = stringer.Substring (1, stringer.Length - 1);
             stringer = stringer + prefix;
-            stringer = stringer.Replace ("^", " ");
+            stringer = stringer.Replace ("°", " ");
             stringer = stringer.Replace ("'", "");
             stringer = stringer.Replace ("\"", "");
 
-            return stringer.Trim();
+            return stringer.Trim ();
+            }
+
+        static public string SwapQuadrant (string stringer)         // 86 10 W to W 86 10
+            {
+            string prefix = stringer.Substring (0, 1);
+
+            if (!( prefix == "N" || prefix == "S" || prefix == "W" || prefix == "E" ))
+                {
+                string suffix = stringer.Substring (stringer.Length - 1, 1);
+                stringer = stringer.Replace (suffix, "");
+                stringer = stringer.Replace ("°", "° ");
+                stringer = stringer.Replace ("'", "' ");
+                stringer = stringer.Replace ("  ", " ");
+                stringer = suffix + " " + stringer;
+                }
+
+            return stringer.Trim ();
             }
 
         static public string RemoveUnwantedChars (string stringer)
@@ -56,7 +89,7 @@
             stringer = stringer.Replace ("<", "");
             stringer = stringer.Replace (">", "");
 
-            string [] delimitors = { "+/-", "x", "to", "-" };
+            string [] delimitors = { "±", "x", "to", "-" };
 
             for (int index = 0; index < delimitors.Length; ++index)
                 if (stringer.Contains (delimitors [index]))

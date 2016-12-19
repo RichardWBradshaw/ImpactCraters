@@ -4,7 +4,7 @@ namespace ImpactCraters
     {
     class Writer
         {
-        static public int CSV (string csvFileName)
+        static public void CSV (string csvFileName)
             {
             TextWriter writer = null;
 
@@ -28,10 +28,10 @@ namespace ImpactCraters
                     }
                 }
 
-            return 0;
+            writer.Close ();
             }
 
-        static public int KML (string kmlFileName)
+        static public void KML (string kmlFileName)
             {
             TextWriter writer = null;
 
@@ -57,12 +57,12 @@ namespace ImpactCraters
                             writer.Write ("    <Placemark>\r\n");
                             writer.Write ("        <name>" + crater.Name + "</name>\r\n");
                             writer.Write ("        <description><![CDATA[" +
-                                                                            "Age " + crater.Age + " mya" + "(" + Period.Get (crater) + ")" +
-                                                                           "\rDiameter " + crater.Diameter + " km" +
-                                                                           "\rExposed " + crater.Exposed +
-                                                                           "\rDrilled " + crater.Drilled +
-                                                                           "\rTarget Rock " + crater.TargetRock +
-                                                                           "\rBolide Type " + crater.BolideType +
+                                                            "Age " + crater.Age + " mya" + "(" + Period.Get (crater) + ")" +
+                                                            "\rDiameter " + crater.Diameter + " km" +
+                                                            "\rExposed " + crater.Exposed +
+                                                            "\rDrilled " + crater.Drilled +
+                                                            "\rTarget Rock " + crater.TargetRock +
+                                                            "\rBolide Type " + crater.BolideType +
                                                          "]]></description>\r\n");
                             writer.Write ("        <Point>\r\n");
                             writer.Write ("            <coordinates>" + ConvertToDecimal (crater.Longitude) + "," + ConvertToDecimal (crater.Latitude) + "," + "0.0</coordinates>\r\n");
@@ -77,7 +77,7 @@ namespace ImpactCraters
                     }
                 }
 
-            return 0;
+            writer.Close ();
             }
 
         private static string ConvertToDecimal (string stringer)
@@ -85,7 +85,7 @@ namespace ImpactCraters
             double value = 0.0, degree = 0.0;
             double signage = ( stringer.StartsWith ("W") || stringer.StartsWith ("S") ) ? -1.0 : 1.0;
 
-            string [] from = { "N", "S", "E", "W", "^", "'", "\"", "  " };
+            string [] from = { "N", "S", "E", "W", "°", "'", "\"", "  " };
             string [] to = { "", "", "", "", " ", " ", " ", " " };
 
             for (int index = 0; index < from.Length; ++index)

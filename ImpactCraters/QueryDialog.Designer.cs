@@ -120,6 +120,7 @@
             this.MinimizeBox = false;
             this.Name = "QueryDialog";
             this.ShowIcon = false;
+            this.ShowInTaskbar = false;
             this.Text = "Query Builder";
             this.TopMost = true;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.QueryBuilder_FormClosing);

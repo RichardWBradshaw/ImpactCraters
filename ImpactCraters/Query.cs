@@ -14,6 +14,7 @@ namespace ImpactCraters
         Drilled = 7,
         TargetRock = 8,
         BolideType = 9,
+        References = 10,
         }
 
     public enum QuerySubtypes
@@ -137,6 +138,10 @@ namespace ImpactCraters
                         queryType = QueryTypes.BolideType;
                         break;
 
+                    case "references":
+                        queryType = QueryTypes.References;
+                        break;
+
                     default:
                         return false;
                     }
@@ -231,46 +236,78 @@ namespace ImpactCraters
                         case QueryTypes.BolideType:
                             value = crater.BolideType;
                             break;
+
+                        case QueryTypes.References:
+                            break;
                         }
 
-                    value = value.ToLower ();
+                    if (query.QueryType == QueryTypes.References)
+                        {
+                        for (int index = 0; index < crater.References.Count; ++index)
+                            {
+                            value = ( string )crater.References [index];
+                            value = value.ToLower ();
 
-                    if (query.QuerySubtype == QuerySubtypes.StartsWith)
-                        {
-                        if (!value.StartsWith (query.Value))
-                            return false;
-                        }
-                    else if (query.QuerySubtype == QuerySubtypes.EndsWith)
-                        {
-                        if (!value.EndsWith (query.Value))
-                            return false;
-                        }
-                    else if (query.QuerySubtype == QuerySubtypes.Contains)
-                        {
-                        if (!value.Contains (query.Value))
-                            return false;
-                        }
-                    else if (query.QuerySubtype == QuerySubtypes.GreaterThan)
-                        {
-                        double numericValue = 0.0, numericQueryValue = 0.0;
-
-                        if (double.TryParse (value, out numericValue))
-                            if (double.TryParse (query.Value, out numericQueryValue))
-                                if (numericValue >= numericQueryValue)
+                            if (query.QuerySubtype == QuerySubtypes.StartsWith)
+                                {
+                                if (value.StartsWith (query.Value))
                                     return true;
+                                }
+                            else if (query.QuerySubtype == QuerySubtypes.EndsWith)
+                                {
+                                if (value.EndsWith (query.Value))
+                                    return true;
+                                }
+                            else if (query.QuerySubtype == QuerySubtypes.Contains)
+                                {
+                                if (value.Contains (query.Value))
+                                    return true;
+                                }
+                            }
 
                         return false;
                         }
-                    else if (query.QuerySubtype == QuerySubtypes.LessThan)
+                    else
                         {
-                        double numericValue = 0.0, numericQueryValue = 0.0;
+                        value = value.ToLower ();
 
-                        if (double.TryParse (value, out numericValue))
-                            if (double.TryParse (query.Value, out numericQueryValue))
-                                if (numericValue <= numericQueryValue)
-                                    return true;
+                        if (query.QuerySubtype == QuerySubtypes.StartsWith)
+                            {
+                            if (!value.StartsWith (query.Value))
+                                return false;
+                            }
+                        else if (query.QuerySubtype == QuerySubtypes.EndsWith)
+                            {
+                            if (!value.EndsWith (query.Value))
+                                return false;
+                            }
+                        else if (query.QuerySubtype == QuerySubtypes.Contains)
+                            {
+                            if (!value.Contains (query.Value))
+                                return false;
+                            }
+                        else if (query.QuerySubtype == QuerySubtypes.GreaterThan)
+                            {
+                            double numericValue = 0.0, numericQueryValue = 0.0;
 
-                        return false;
+                            if (double.TryParse (value, out numericValue))
+                                if (double.TryParse (query.Value, out numericQueryValue))
+                                    if (numericValue >= numericQueryValue)
+                                        return true;
+
+                            return false;
+                            }
+                        else if (query.QuerySubtype == QuerySubtypes.LessThan)
+                            {
+                            double numericValue = 0.0, numericQueryValue = 0.0;
+
+                            if (double.TryParse (value, out numericValue))
+                                if (double.TryParse (query.Value, out numericQueryValue))
+                                    if (numericValue <= numericQueryValue)
+                                        return true;
+
+                            return false;
+                            }
                         }
                     }
                 }

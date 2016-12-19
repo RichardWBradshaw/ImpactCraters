@@ -58,9 +58,12 @@ namespace ImpactCraters
                 "where <keyword> startswith <string-value>\n" +
                 "where <keyword> contains <string-value>\n" +
                 "where <keyword> endswith <string-value>\n" +
-                "<keyword> is either 'class', 'region', 'country', 'continent', 'diameter', 'age' or 'impacter'\n" +
-                "<string-value> is an alpha-numeric string\n\n"
-                , "Example query statements"
+                "<keyword> is either 'name', 'location', 'diameter', 'age', 'period', 'exposed', 'drilled', 'target' or 'bolide'\n" +
+                "<string-value> is an alpha-numeric string\n\n" +
+                "where <keyword> < <string-value>\n" +
+                "where <keyword> > <string-value>\n" +
+                "<keyword> is either 'diameter 'or 'age'\n"
+                , "Example Query Statements"
                 );
             }
 

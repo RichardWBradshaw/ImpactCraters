@@ -33,6 +33,7 @@
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.updateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.launchEarthImpactDatabaseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.launcnGoogleMyMapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -40,11 +41,11 @@
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.queryBuilderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.aboutImpactCratersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.displayReferencesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.displayGoggleMapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.displayEarthImpactDatabaseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.aboutImpactCratersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -65,6 +66,7 @@
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.openToolStripMenuItem,
             this.saveToolStripMenuItem,
+            this.updateToolStripMenuItem,
             this.toolStripSeparator1,
             this.launchEarthImpactDatabaseToolStripMenuItem,
             this.launcnGoogleMyMapToolStripMenuItem,
@@ -87,6 +89,13 @@
             this.saveToolStripMenuItem.Size = new System.Drawing.Size(352, 22);
             this.saveToolStripMenuItem.Text = "Save...";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.Save_Click);
+            // 
+            // updateToolStripMenuItem
+            // 
+            this.updateToolStripMenuItem.Name = "updateToolStripMenuItem";
+            this.updateToolStripMenuItem.Size = new System.Drawing.Size(352, 22);
+            this.updateToolStripMenuItem.Text = "Update...";
+            this.updateToolStripMenuItem.Click += new System.EventHandler(this.Update_Click);
             // 
             // toolStripSeparator1
             // 
@@ -137,21 +146,6 @@
             this.queryBuilderToolStripMenuItem.Text = "Query Builder...";
             this.queryBuilderToolStripMenuItem.Click += new System.EventHandler(this.Query_Click);
             // 
-            // helpToolStripMenuItem
-            // 
-            this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.aboutImpactCratersToolStripMenuItem});
-            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
-            this.helpToolStripMenuItem.Text = "Help";
-            // 
-            // aboutImpactCratersToolStripMenuItem
-            // 
-            this.aboutImpactCratersToolStripMenuItem.Name = "aboutImpactCratersToolStripMenuItem";
-            this.aboutImpactCratersToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
-            this.aboutImpactCratersToolStripMenuItem.Text = "About Impact Craters...";
-            this.aboutImpactCratersToolStripMenuItem.Click += new System.EventHandler(this.About_click);
-            // 
             // displayReferencesToolStripMenuItem
             // 
             this.displayReferencesToolStripMenuItem.Checked = true;
@@ -172,12 +166,27 @@
             // 
             // displayEarthImpactDatabaseToolStripMenuItem
             // 
-            this.displayEarthImpactDatabaseToolStripMenuItem.Checked = false;
+            this.displayEarthImpactDatabaseToolStripMenuItem.Checked = true;
             this.displayEarthImpactDatabaseToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.displayEarthImpactDatabaseToolStripMenuItem.Name = "displayEarthImpactDatabaseToolStripMenuItem";
             this.displayEarthImpactDatabaseToolStripMenuItem.Size = new System.Drawing.Size(242, 22);
             this.displayEarthImpactDatabaseToolStripMenuItem.Text = "Display Earth Impact Database...";
             this.displayEarthImpactDatabaseToolStripMenuItem.Click += new System.EventHandler(this.MenuCheckBox_Click);
+            // 
+            // helpToolStripMenuItem
+            // 
+            this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.aboutImpactCratersToolStripMenuItem});
+            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.helpToolStripMenuItem.Text = "Help";
+            // 
+            // aboutImpactCratersToolStripMenuItem
+            // 
+            this.aboutImpactCratersToolStripMenuItem.Name = "aboutImpactCratersToolStripMenuItem";
+            this.aboutImpactCratersToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
+            this.aboutImpactCratersToolStripMenuItem.Text = "About Impact Craters...";
+            this.aboutImpactCratersToolStripMenuItem.Click += new System.EventHandler(this.About_click);
             // 
             // ImpactCratersDialog
             // 
@@ -189,6 +198,7 @@
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "ImpactCratersDialog";
             this.Text = "Impact Craters";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ImpactCratersDialog_FormClosing);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
@@ -213,6 +223,7 @@
         private System.Windows.Forms.ToolStripMenuItem displayReferencesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem displayGoggleMapToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem displayEarthImpactDatabaseToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem updateToolStripMenuItem;
         }
     }
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
+using Microsoft.Win32;
 
 namespace ImpactCraters
     {
@@ -43,9 +44,18 @@ namespace ImpactCraters
             set { DetailsDialog_ = value; }
             }
 
+        private string LastDataDirectory_ = "C:\\ProgramData\\Impact Craters\\";
+        private string LastDataDirectory
+            {
+            get { return LastDataDirectory_; }
+            set { LastDataDirectory_ = value; }
+            }
+
         public ImpactCratersDialog ()
             {
             InitializeComponent ();
+
+            ReadSettings ();
 
             LvwColumnSorter = new ListViewColumnSorter ();
 
@@ -90,7 +100,7 @@ namespace ImpactCraters
             listView.Columns.Add ("Latitude", width, HorizontalAlignment.Center);
             listView.Columns.Add ("Longitude", width, HorizontalAlignment.Center);
             listView.Columns.Add ("Diameter (km)", width, HorizontalAlignment.Center);
-            listView.Columns.Add ("Age (mly)", width, HorizontalAlignment.Center);
+            listView.Columns.Add ("Age (mya)", width, HorizontalAlignment.Center);
             listView.Columns.Add ("Geologic Period", width, HorizontalAlignment.Center);
             listView.Columns.Add ("Exposed", width, HorizontalAlignment.Center);
             listView.Columns.Add ("Drilled", width, HorizontalAlignment.Center);
@@ -122,7 +132,7 @@ namespace ImpactCraters
                     item.SubItems.Add (Helper.GetText (crater.Longitude));
                     item.SubItems.Add (Helper.GetText (crater.Diameter));
                     item.SubItems.Add (Helper.GetText (crater.Age));
-                    item.SubItems.Add (Helper.GetText (Period.Get(crater)));
+                    item.SubItems.Add (Helper.GetText (Period.Get (crater)));
                     item.SubItems.Add (Helper.GetText (crater.Exposed));
                     item.SubItems.Add (Helper.GetText (crater.Drilled));
                     item.SubItems.Add (Helper.GetText (crater.TargetRock));
@@ -202,7 +212,7 @@ namespace ImpactCraters
                     {
                     if (crater.Longitude.Length > 0 && crater.Latitude.Length > 0)
                         {
-                        string url = "https://www.google.com/maps/place/" + Helper.ReformatCoordinate(crater.Longitude) + "+" + Helper.ReformatCoordinate (crater.Latitude);
+                        string url = "https://www.google.com/maps/place/" + Helper.ReformatCoordinate (crater.Longitude) + "+" + Helper.ReformatCoordinate (crater.Latitude);
 
                         System.Diagnostics.Process.Start (url);
                         }
@@ -211,14 +221,11 @@ namespace ImpactCraters
                 if (displayEarthImpactDatabaseToolStripMenuItem.Checked)
                     {
                     string name = crater.Name.ToLower ();
-                    name = name.Replace (" ", "");
-                    name = name.Replace ("-", "");
-                    name = name.Replace (".", "");
+                    string [] from = { "Ilumetsä", " ", "-", ".", "ö", "ô", "å", "ã", "ä", "'" };
+                    string [] to = { "Ilumets", "", "", "", "o", "o", "a", "a", "a", "" };
 
-                    name = name.Replace ("ö", "o");
-                    name = name.Replace ("ä", "a");
-                    name = name.Replace ("�", "o");
-                    name = name.Replace ("�", "a");
+                    for (int index = 0; index < from.Length; ++index)
+                        name = name.Replace (from [index], to [index]);
 
                     string url = "http://www.passc.net/EarthImpactDatabase/" + name + ".html";
 
@@ -257,7 +264,7 @@ namespace ImpactCraters
             {
             OpenFileDialog openFileDialog = new OpenFileDialog ();
 
-            openFileDialog.InitialDirectory = "C:\\ProgramData\\Impact Craters\\";
+            openFileDialog.InitialDirectory = LastDataDirectory;
             openFileDialog.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
             openFileDialog.FilterIndex = 1;
             openFileDialog.RestoreDirectory = true;
@@ -267,6 +274,12 @@ namespace ImpactCraters
                 {
                 try
                     {
+                    if (ImpactCraters.CraterArray != null)
+                        ImpactCraters.CraterArray.RemoveRange (0, ImpactCraters.CraterArray.Count - 1);
+
+                    LastDataDirectory = openFileDialog.FileNames [0];
+                    LastDataDirectory = LastDataDirectory.Substring (0, LastDataDirectory.LastIndexOf ('\\')) + "\\";
+
                     for (int index = 0; index < openFileDialog.FileNames.Length; ++index)
                         if (openFileDialog.OpenFile () != null)
                             ImpactCraters.Read (openFileDialog.FileNames [index]);
@@ -284,7 +297,7 @@ namespace ImpactCraters
             {
             SaveFileDialog saveFileDialog = new SaveFileDialog ();
 
-            saveFileDialog.InitialDirectory = "C:\\ProgramData\\Impact Craters\\";
+            saveFileDialog.InitialDirectory = LastDataDirectory;
             saveFileDialog.Filter = "CSV files (*.csv)|*.csv|KML files (*.kml)|*.kml|All files (*.*)|*.*";
             saveFileDialog.FilterIndex = 2;
             saveFileDialog.RestoreDirectory = true;
@@ -312,6 +325,26 @@ namespace ImpactCraters
                 }
             }
 
+        private void Update_Click (object sender, EventArgs e)
+            {
+            OpenFileDialog openFileDialog = new OpenFileDialog ();
+
+            openFileDialog.InitialDirectory = LastDataDirectory;
+            openFileDialog.Filter = "KML files (*.kml)|*.kml|All files (*.*)|*.*";
+            openFileDialog.FilterIndex = 1;
+            openFileDialog.RestoreDirectory = true;
+            openFileDialog.Multiselect = true;
+
+            if (openFileDialog.ShowDialog () == DialogResult.OK)
+                {
+                for (int index = 0; index < openFileDialog.FileNames.Length; ++index)
+                    if (openFileDialog.OpenFile () != null)
+                        Updater.Read (LastDataDirectory, openFileDialog.FileNames [index]);
+
+                AddItemsToListView (ImpacterListView);
+                }
+            }
+
         private void launchEarthImpactDatabaseToolStripMenuItem_Click (object sender, EventArgs e)
             {
             string url = "http://www.passc.net/EarthImpactDatabase/";
@@ -328,12 +361,19 @@ namespace ImpactCraters
 
         private void Exit_click (object sender, EventArgs e)
             {
+            WriteSettings ();
             Close ();
+            }
+
+        private void ImpactCratersDialog_FormClosing (object sender, FormClosingEventArgs e)
+            {
+            WriteSettings ();
             }
 
         private void About_click (object sender, EventArgs e)
             {
-
+            AboutBox about = new AboutBox ();
+            about.ShowDialog ();
             }
 
         private void MenuCheckBox_Click (object sender, EventArgs e)
@@ -350,6 +390,57 @@ namespace ImpactCraters
                 {
                 displayEarthImpactDatabaseToolStripMenuItem.Checked = displayEarthImpactDatabaseToolStripMenuItem.CheckState == CheckState.Checked ? false : true;
                 }
+            }
+
+        private void WriteSettings ()
+            {
+            RegistryKey key = RegistryKey.OpenRemoteBaseKey (RegistryHive.CurrentUser, string.Empty);
+            RegistryKey subkey = ( key != null ) ? key.CreateSubKey ("Software\\ImpactCraters\\Queries") : null;
+
+            if (subkey != null)
+                {
+                subkey.SetValue ("DisplayReferences", displayReferencesToolStripMenuItem.Checked ? "True" : "False", RegistryValueKind.String);
+                subkey.SetValue ("DisplayGoogleMap", displayGoggleMapToolStripMenuItem.Checked ? "True" : "False", RegistryValueKind.String);
+                subkey.SetValue ("DisplayEarthImpactDatabase", displayEarthImpactDatabaseToolStripMenuItem.Checked ? "True" : "False", RegistryValueKind.String);
+                subkey.SetValue ("LastDataDirectory", LastDataDirectory, RegistryValueKind.String);
+                }
+
+            if (key != null)
+                key.Close ();
+            }
+
+        private void ReadSettings ()
+            {
+            RegistryKey key = RegistryKey.OpenRemoteBaseKey (RegistryHive.CurrentUser, string.Empty);
+            RegistryKey subkey = ( key != null ) ? key.CreateSubKey ("Software\\ImpactCraters\\Queries") : null;
+
+            if (subkey != null)
+                {
+                displayReferencesToolStripMenuItem.Checked = ReadValue (subkey, "DisplayReferences");
+                displayGoggleMapToolStripMenuItem.Checked = ReadValue (subkey, "DisplayGoogleMap");
+                displayEarthImpactDatabaseToolStripMenuItem.Checked = ReadValue (subkey, "DisplayEarthImpactDatabase");
+                LastDataDirectory = ( string )subkey.GetValue ("LastDataDirectory");
+                }
+
+            if (key != null)
+                key.Close ();
+            }
+
+        private bool ReadValue (RegistryKey subkey, string name)
+            {
+            object obj = subkey.GetValue (name);
+
+            if (obj != null)
+                {
+                string value = obj as string;
+
+                if (value.Equals ("True"))
+                    return true;
+                else if (value.Equals ("False"))
+                    return false;
+                }
+
+            return false;
             }
         }
     }
